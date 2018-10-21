@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>row</title>
+  <script>
+    var sharpSoundArray = ["G3","G#3","A3","A#3","B3",
+                           "C4","C#4","D4","D#4","E4","F4","F#4","G4","G#4","A4","A#4","B4",
+                           "C5","C#5","D5","D#5","E5","F5","F#5","G5","G#5","A5","A#5","B5",
+                           "C6"];
+    var flatSoundArray = ["G3","Gb3","A3","Ab3","B3",
+                           "C4","Cb4","D4","Db4","E4","F4","Fb4","G4","Gb4","A4","Ab4","B4",
+                           "C5","Cb5","D5","Db5","E5","F5","Fb5","G5","Gb5","A5","Ab5","B5",
+                           "C6"];
+    var intervalArray = ["P1","m2","M2","m3","M3","P4","-","P5","m6","M6","m7","M7","P8"];
+
+    var totalQuestions = 0;
+    var totalSucceed = 0;
+    var totalFailed = 0;
+
+    function getRandomInt(min, max) {
+      var min = Math.ceil(min);
+      var max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    }
+    function switchPage(present,next){
+      document.getElementById(present).style.display = "none";
+      document.getElementById(next).style.display = "block";
+    }
+    function setSoundArray(){
+      accidental = selectAccidental.accidental.value; //Global
+      if (accidental == "sharp"){
+        soundArray = sharpSoundArray; //Global
+      } else if (accidental == "flat"){
+        soundArray = flatSoundArray; //Global
+      }
+    }
+    function setFirstSound(intervalType){
+      if (intervalType=="asc"){
+         var firstSound = soundArray[getRandomInt(0,17)]; //Global variable
+      } else if (intervalType=="desc"){
+         var firstSound = soundArray[getRandomInt(12,29)]; //Global variable
+      }
+      return firstSound;
+    }
+    function setSecondSound(interval,intervalType,firstSound){
+      var intervalId = intervalArray.indexOf(interval);
+      var firstSoundId = soundArray.indexOf(firstSound);
+      if (intervalType=="asc"){
+        var secondSound = soundArray[firstSoundId+intervalId];
+      } else if (intervalType=="desc"){
+        var secondSound = soundArray[firstSoundId-intervalId];
+      }
+      return secondSound;
+    }
+    function setQuestion(){
+      interval = selectInterval.interval.value; //Global
+      intervalType = selectIntervalType.intervalType.value; //Global
+      firstSound = setFirstSound(intervalType); //Global
+      secondSound = setSecondSound(interval,intervalType,firstSound); //Global
+    }
+    function displayInfo(){
+      document.getElementById("soundName").innerHTML =
+        "<p>"+firstSound+"--->"+secondSound+"</p>"+
+        "<p>questions:"+questions+"</p>";
+    }
+    function setCount(){
+      questions = selectQuestion.questions.value; //Global
+      if (questions=="0"){
+        questions = "endless";
+      }
+    }
+    function reduceCount(){
+      if (questions!="endless"){
+        questions--
+      }
+      if (questions=="0"){
+        switchPage("questionPage","resultPage");
+        displayRresult();
+      }
+    }
+    function playSound(sound,length){
+      var synth = new Tone.Synth().toMaster();
+      synth.triggerAttackRelease(sound,length);
+    }
+    function playFirstSound(){
+      playSound(firstSound,5);
+    }
+    function playSecondSound(){
+      playSound(secondSound,1);
+    }
+    function increaseSucceed(){
+      totalQuestions++;
+      totalSucceed++;
+    }
+    function increaseFailed(){
+      totalQuestions++;
+      totalFailed++;
+    }
+    function displayRresult(){
+      correctRate = totalSucceed/totalQuestions*100;
+      correctRate = Math.round(correctRate*10)/10; //小数点第二位で四捨五入
+      document.getElementById("result").innerHTML =
+        "<h2>"+"correctRate:"+correctRate+"%"+"</h2>"+
+        "<p>"+"intervalType:"+intervalType+"</p>"+
+        "<p>"+"interval:"+interval+"</p>"+
+        "<p>"+"accidental:"+accidental+"</p>"+
+        "<p>"+"totalQuestions:"+totalQuestions+"</p>"+
+        "<p>"+"totalSucceed:"+totalSucceed+"</p>"+
+        "<p>"+"totalFailed:"+totalFailed+"</p>";
+    }
+    function debug(){
+      console.log("questions:"+questions);
+      console.log("interval:"+interval);
+      console.log("intervalType:"+intervalType);
+      console.log("firstSound:"+firstSound);
+      console.log("secondSound:"+secondSound);
+      console.log("accidental:"+accidental);
+      console.log("soundArray.length:"+soundArray.length);
+      console.log("totalQuestions:"+totalQuestions);
+      console.log("totalSucceed:"+totalSucceed);
+      console.log("totalFailed:"+totalFailed);
+    }
+  </script>
+  <style>
+    .hide{display: none;}
+    .red{background-color: red;}
+    .olive{background-color: olive;}
+    .yellow{background-color: yellow;}
+    .gray{background-color: gray;}
+    .silver{background-color: silver;}
+  </style>
+</head>
+<body>
+  <div id="selectPage" class="yellow">
+    <h4>This is harmony training!</h4>
+
+    <form id=selectQuestion>
+      <label for="questions">Questions</label>
+      <input id="questions" type="number" value="0" min="0">
+    </form>
+
+    <form id="selectInterval">
+      <label for="interval">Interval</label>
+      <select id="interval">
+        <option value="P1">完全1度</option>
+        <option value="m2">短2度</option>
+        <option value="M2">長2度</option>
+        <option value="m3">短3度</option>
+        <option value="M3">長3度</option>
+        <option value="P4">完全4度</option>
+        <option value="P5">完全5度</option>
+        <option value="m6">短6度</option>
+        <option value="M6">長6度</option>
+        <option value="m7">短7度</option>
+        <option value="M7">長7度</option>
+        <option value="P8">完全8度</option>
+      </select>
+    </form>
+
+    <form id="selectIntervalType">
+      <label for="intervalType">Interval Type</label>
+      <select id="intervalType">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+<!--        <option value="both">Ascending & Descending</option> -->
+      </select>
+    </form>
+
+    <form id="selectAccidental">
+      <label for="accidental">Accidental</label>
+      <select id="accidental">
+        <option value="sharp">sharp</option>
+        <option value="flat">flat</option>
+<!--        <option value="both">sharp & flat</option> -->
+      </select>
+    </form>
+
+      <p>
+        <button type="submit" onclick='switchPage("selectPage","questionPage");setSoundArray();setQuestion();setCount();displayInfo()'>Start!</button>
+      </p>
+    <script src="https://tonejs.github.io/build/Tone.min.js"></script>
+  </div>
+
+
+  <div id="questionPage" class="hide red">
+    <p>
+      <div id="soundName" class="olive"></div>
+      <button type="" onclick='playFirstSound()'>PlayFirst</button>
+      <button type="" onclick='playSecondSound()'>PlaySecond</button>
+    </p>
+    <div id="answerButton" class="gray">
+        <p>
+          <button type="" onclick='switchPage("answerButton","nextButton");increaseSucceed()'>Succeed</button>
+          <button type="" onclick='switchPage("answerButton","nextButton");increaseFailed()'>Failed</button>
+        </p>
+    </div>
+    <div id="nextButton" class="hide silver">
+        <p>
+          <button type="" onclick='switchPage("nextButton","answerButton"); setQuestion(); reduceCount(); displayInfo()'>Next</button>
+        </p>
+    </div>
+    <p>
+      <button type="" onclick='switchPage("questionPage","resultPage");displayRresult()'>Exit</button>
+    </p>
+  </div>
+
+  <div id="resultPage" class="hide olive">
+    <h4>This is result!</h4>
+    <div id="result" class="silver"></div>
+      <p>
+        <button type="" onclick='switchPage("resultPage","selectPage")'>Top</button>
+      </p>
+  </div>
+
+  <div id="debugButton">
+      <p>
+        <button type="" onclick='debug()'>Debug</button>
+      </p>
+  </div>
+
+</body>
+</html>
