@@ -110,6 +110,11 @@
         "<p>"+"totalSucceed:"+totalSucceed+"</p>"+
         "<p>"+"totalFailed:"+totalFailed+"</p>";
     }
+    function resetResult(){
+      totalQuestions = 0;
+      totalSucceed = 0;
+      totalFailed = 0;
+    }
     function debug(){
       console.log("questions:"+questions);
       console.log("interval:"+interval);
@@ -210,7 +215,7 @@
     <h4>This is result!</h4>
     <div id="result" class="silver"></div>
       <p>
-        <button type="" onclick='switchPage("resultPage","selectPage")'>Top</button>
+        <button type="" onclick='switchPage("resultPage","selectPage");resetResult()'>Top</button>
       </p>
   </div>
 
