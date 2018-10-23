@@ -19,6 +19,30 @@
     var totalSucceed = 0;
     var totalFailed = 0;
 
+		function load() {
+			ABCJS.renderAbc("sheet", abc);
+		}
+    function setAbc(){
+      firstNote = convertToNote(firstSound);
+      secondNote = convertToNote(secondSound);
+		  abc = firstNote + "|" + secondNote + "|";
+    }
+		function convertToNote(sound){
+			letter = [];
+			if (sound.length == "2"){
+			  note = sound;
+			} else if (sound.length == "3"){
+				for (i=0; i<sound.length; i++){
+					letter.push(sound.substr(i,1));
+				}
+				if (letter[1] == "#"){
+					note = "^"+letter[0]+letter[2];
+				} else if (letter[1] == "b"){
+					note = "_"+letter[0]+letter[2];
+				}
+			}
+			return note;
+		}
     function getRandomInt(min, max) {
       var min = Math.ceil(min);
       var max = Math.floor(max);
@@ -59,6 +83,7 @@
       intervalType = selectIntervalType.intervalType.value; //Global
       firstSound = setFirstSound(intervalType); //Global
       secondSound = setSecondSound(interval,intervalType,firstSound); //Global
+      setAbc();
     }
     function displayInfo(){
       document.getElementById("soundName").innerHTML =
@@ -183,13 +208,15 @@
     </form>
 
       <p>
-        <button type="submit" onclick='switchPage("selectPage","questionPage");setSoundArray();setQuestion();setCount();displayInfo()'>Start!</button>
+        <button type="submit" onclick='switchPage("selectPage","questionPage");setSoundArray();setQuestion();load();setCount();displayInfo()'>Start!</button>
       </p>
     <script src="https://tonejs.github.io/build/Tone.min.js"></script>
+    <script src="./js/abcjs_basic_5.3.5-min.js"></script>
   </div>
 
-
   <div id="questionPage" class="hide red">
+    <div id="sheet">
+    </div>
     <p>
       <div id="soundName" class="olive"></div>
       <button type="" onclick='playFirstSound()'>PlayFirst</button>
@@ -203,7 +230,7 @@
     </div>
     <div id="nextButton" class="hide silver">
         <p>
-          <button type="" onclick='switchPage("nextButton","answerButton"); setQuestion(); reduceCount(); displayInfo()'>Next</button>
+          <button type="" onclick='switchPage("nextButton","answerButton"); setQuestion();load();reduceCount();displayInfo()'>Next</button>
         </p>
     </div>
     <p>
