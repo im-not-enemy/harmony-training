@@ -25,22 +25,29 @@
     function setAbc(){
       firstNote = convertToNote(firstSound);
       secondNote = convertToNote(secondSound);
-		  abc = firstNote + "|" + secondNote + "|";
+		  abc = "L: 1/4\n" +
+            firstNote + "|" + secondNote + "|";
     }
 		function convertToNote(sound){
 			letter = [];
-			if (sound.length == "2"){
-			  note = sound;
-			} else if (sound.length == "3"){
-				for (i=0; i<sound.length; i++){
-					letter.push(sound.substr(i,1));
-				}
-				if (letter[1] == "#"){
-					note = "^"+letter[0]+letter[2];
-				} else if (letter[1] == "b"){
-					note = "_"+letter[0]+letter[2];
-				}
+			for (i=0; i<sound.length; i++){
+			letter.push(sound.substr(i,1));
 			}
+			if (letter[1] == "#"){
+				note = "^"+letter[0];
+			} else if (letter[1] == "b"){
+				note = "_"+letter[0];
+			} else {
+        note = letter[0];
+      }
+      letterTail = letter[letter.length - 1];
+      if (letterTail == "3"){
+        note = note + ",";
+      } else if (letterTail == "5"){
+        note = note.toLowerCase(note);
+      } else if (letterTail == "6"){
+        note = note + "'";
+      }
 			return note;
 		}
     function getRandomInt(min, max) {
@@ -151,6 +158,8 @@
       console.log("totalQuestions:"+totalQuestions);
       console.log("totalSucceed:"+totalSucceed);
       console.log("totalFailed:"+totalFailed);
+      console.log("firstNote:"+firstNote);
+      console.log("secondNote:"+secondNote);
     }
   </script>
   <style>
